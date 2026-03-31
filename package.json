@@ -1,0 +1,14 @@
+{
+  "name": "tabpfn-gsheets-addon",
+  "version": "1.0.0",
+  "description": "Google Sheets add-on for TabPFN tabular data predictions",
+  "private": true,
+  "devDependencies": {
+    "@google/clasp": "^2.4.2"
+  },
+  "scripts": {
+    "push": "clasp push",
+    "open": "clasp open",
+    "deploy": "clasp push && clasp open"
+  }
+}

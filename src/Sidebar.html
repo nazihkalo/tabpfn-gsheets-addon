@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+      font-size: 13px;
+      color: #202124;
+      padding: 16px;
+    }
+    h2 { font-size: 16px; font-weight: 500; margin-bottom: 12px; }
+    h3 { font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #5f6368; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #5f6368;
+      margin-bottom: 4px;
+      margin-top: 12px;
+    }
+    label:first-child { margin-top: 0; }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: #1a73e8;
+      box-shadow: 0 0 0 2px rgba(26,115,232,0.15);
+    }
+
+    .radio-group { margin-top: 6px; }
+    .radio-group label {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 16px;
+      margin-top: 0;
+      font-weight: 400;
+      color: #202124;
+      cursor: pointer;
+    }
+    .radio-group input[type="radio"] { margin-right: 4px; }
+
+    .btn {
+      display: inline-block;
+      padding: 8px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+    .btn-primary {
+      background: #1a73e8;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #1765cc; }
+    .btn-primary:disabled { background: #dadce0; cursor: default; }
+
+    .btn-secondary {
+      background: #fff;
+      color: #1a73e8;
+      border: 1px solid #dadce0;
+      padding: 6px 14px;
+      margin-top: 4px;
+      font-size: 12px;
+    }
+    .btn-secondary:hover { background: #f8f9fa; }
+
+    .btn-text {
+      background: none;
+      border: none;
+      color: #1a73e8;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 4px 0;
+      margin-top: 8px;
+    }
+    .btn-text:hover { text-decoration: underline; }
+
+    .inline-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+    .inline-row input[type="text"] { flex: 1; }
+
+    .alert {
+      padding: 10px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-top: 12px;
+      display: none;
+    }
+    .alert-error { background: #fce8e6; color: #c5221f; }
+    .alert-success { background: #e6f4ea; color: #137333; }
+    .alert-info { background: #e8f0fe; color: #1967d2; }
+
+    .spinner {
+      display: none;
+      margin-top: 12px;
+      color: #5f6368;
+      font-size: 12px;
+    }
+    .spinner::before {
+      content: '';
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #dadce0;
+      border-top-color: #1a73e8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e8eaed;
+      margin: 16px 0;
+    }
+
+    .model-badge {
+      display: inline-block;
+      background: #e8f0fe;
+      color: #1967d2;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    a { color: #1a73e8; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px 16px;
+      background: #f8f9fa;
+      border-top: 1px solid #e8eaed;
+      font-size: 11px;
+      color: #5f6368;
+    }
+    .footer a { font-size: 11px; }
+
+    .step-indicator {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .step {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: #dadce0;
+    }
+    .step.completed { background: #1a73e8; }
+    .step.current { background: #1a73e8; }
+  </style>
+</head>
+<body>
+  <!-- Step Indicator -->
+  <div class="step-indicator">
+    <div class="step" id="step1"></div>
+    <div class="step" id="step2"></div>
+    <div class="step" id="step3"></div>
+    <div class="step" id="step4"></div>
+  </div>
+
+  <!-- Screen 0: Welcome -->
+  <div id="screen-welcome" class="screen">
+    <div style="text-align:center; padding-top:24px;">
+      <div style="font-size:36px; margin-bottom:12px;">TabPFN</div>
+      <h2 style="font-size:18px; margin-bottom:8px;">ML Predictions in Google Sheets</h2>
+      <p style="font-size:13px; color:#5f6368; margin-bottom:24px; line-height:1.5;">
+        Train and predict with TabPFN — a pre-trained model for tabular data.
+        No feature engineering or hyperparameter tuning needed.
+      </p>
+      <div style="text-align:left; background:#f8f9fa; border-radius:8px; padding:14px 16px; margin-bottom:20px;">
+        <div style="font-size:12px; font-weight:500; color:#5f6368; margin-bottom:8px;">How it works:</div>
+        <div style="font-size:12px; color:#202124; line-height:1.8;">
+          1. Connect your free PriorLabs API key<br>
+          2. Select training data and fit a model<br>
+          3. Select test data and get predictions
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%; padding:12px;" onclick="goToScreen('screen-apikey')">Get Started</button>
+      <p style="font-size:11px; color:#5f6368; margin-top:12px;">
+        You'll need a free API key from <a href="https://ux.priorlabs.ai" target="_blank">ux.priorlabs.ai</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Screen 1: API Key -->
+  <div id="screen-apikey" class="screen">
+    <h2>Connect Your API Key</h2>
+    <p style="font-size:12px; color:#5f6368; margin-bottom:4px;">
+      To use TabPFN, you need a free API key from PriorLabs.
+    </p>
+    <p style="font-size:12px; margin-bottom:12px;">
+      <a href="https://ux.priorlabs.ai" target="_blank">Sign up and get your key here</a>
+      (Account &rarr; Access Tokens)
+    </p>
+    <label for="apiKeyInput">API Key</label>
+    <div class="inline-row">
+      <input type="password" id="apiKeyInput" placeholder="Paste your PriorLabs API key">
+      <button class="btn btn-secondary" onclick="toggleKeyVisibility()" id="toggleKeyBtn" style="white-space:nowrap;">Show</button>
+    </div>
+    <button class="btn btn-primary" style="width:100%;" onclick="saveKey()">Save & Continue</button>
+    <div id="apikey-error" class="alert alert-error"></div>
+    <div id="apikey-spinner" class="spinner">Saving...</div>
+  </div>
+
+  <!-- Screen 2: Fit Model -->
+  <div id="screen-fit" class="screen">
+    <h2>Fit Model</h2>
+
+    <label for="trainRange">Training Data Range</label>
+    <div class="inline-row">
+      <input type="text" id="trainRange" placeholder="e.g. Sheet1!A1:E100">
+      <button class="btn btn-secondary" onclick="useSelectionFor('trainRange')">Use Selection</button>
+    </div>
+
+    <label for="targetColumn">Target Column</label>
+    <select id="targetColumn" disabled>
+      <option value="">-- select range first --</option>
+    </select>
+
+    <label>Task Type</label>
+    <div class="radio-group">
+      <label><input type="radio" name="taskType" value="classification" checked> Classification</label>
+      <label><input type="radio" name="taskType" value="regression"> Regression</label>
+    </div>
+
+    <button class="btn btn-primary" id="fitBtn" onclick="fitModel()">Fit Model</button>
+    <div id="fit-spinner" class="spinner">Fitting model... This may take a moment.</div>
+    <div id="fit-error" class="alert alert-error"></div>
+    <div id="fit-success" class="alert alert-success"></div>
+
+    <hr class="divider">
+    <button class="btn-text" onclick="goToScreen('screen-apikey')">&larr; Change API Key</button>
+  </div>
+
+  <!-- Screen 3: Predict -->
+  <div id="screen-predict" class="screen">
+    <h2>Predict</h2>
+
+    <div id="model-info" style="margin-bottom:12px;"></div>
+
+    <label for="testRange">Test Data Range</label>
+    <div class="inline-row">
+      <input type="text" id="testRange" placeholder="e.g. Sheet1!A1:D20">
+      <button class="btn btn-secondary" onclick="useSelectionFor('testRange')">Use Selection</button>
+    </div>
+
+    <label for="outputType">Output Type</label>
+    <select id="outputType">
+      <!-- populated dynamically based on task type -->
+    </select>
+
+    <label for="outputCell">Write Results To</label>
+    <div class="inline-row">
+      <input type="text" id="outputCell" placeholder="e.g. Sheet1!G1">
+      <button class="btn btn-secondary" onclick="useSelectionFor('outputCell')">Use Selection</button>
+    </div>
+
+    <button class="btn btn-primary" id="predictBtn" onclick="predict()">Predict</button>
+
+    <div id="predict-spinner" class="spinner">Running predictions...</div>
+    <div id="predict-error" class="alert alert-error"></div>
+    <div id="predict-success" class="alert alert-success"></div>
+
+    <hr class="divider">
+    <div style="display:flex; justify-content:space-between;">
+      <button class="btn-text" onclick="goToScreen('screen-fit')">&larr; Fit a new model</button>
+      <button class="btn-text" onclick="goToScreen('screen-apikey')">Change API Key</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <button class="btn-text" onclick="changeApiKey()" style="margin:0;">Change API Key</button>
+    &middot;
+    <a href="https://docs.priorlabs.ai" target="_blank">TabPFN Docs</a>
+  </div>
+
+  <script>
+    // --- Navigation ---
+    var screens = ['screen-welcome', 'screen-apikey', 'screen-fit', 'screen-predict'];
+
+    function goToScreen(screenId) {
+      screens.forEach(function(id, idx) {
+        var el = document.getElementById(id);
+        var step = document.getElementById('step' + (idx + 1));
+        if (id === screenId) {
+          el.classList.add('active');
+          step.classList.add('current');
+        } else {
+          el.classList.remove('active');
+          step.classList.remove('current');
+        }
+      });
+      // Mark earlier steps as completed
+      var targetIdx = screens.indexOf(screenId);
+      for (var i = 0; i < screens.length; i++) {
+        var step = document.getElementById('step' + (i + 1));
+        if (i < targetIdx) {
+          step.classList.add('completed');
+        } else if (i > targetIdx) {
+          step.classList.remove('completed');
+        }
+      }
+      clearAlerts();
+    }
+
+    function clearAlerts() {
+      document.querySelectorAll('.alert').forEach(function(el) { el.style.display = 'none'; });
+      document.querySelectorAll('.spinner').forEach(function(el) { el.style.display = 'none'; });
+    }
+
+    function showAlert(id, message) {
+      var el = document.getElementById(id);
+      el.textContent = message;
+      el.style.display = 'block';
+    }
+
+    function showSpinner(id) {
+      document.getElementById(id).style.display = 'block';
+    }
+
+    function hideSpinner(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    // --- Init ---
+    function init() {
+      google.script.run
+        .withSuccessHandler(function(hasKey) {
+          if (hasKey) {
+            checkForExistingModel();
+          } else {
+            goToScreen('screen-welcome');
+          }
+        })
+        .withFailureHandler(function() {
+          goToScreen('screen-welcome');
+        })
+        .hasApiKey();
+    }
+
+    function checkForExistingModel() {
+      google.script.run
+        .withSuccessHandler(function(info) {
+          if (info && info.model_id) {
+            populateOutputType(info.task);
+            showModelInfo(info);
+            goToScreen('screen-predict');
+          } else {
+            goToScreen('screen-fit');
+          }
+        })
+        .withFailureHandler(function() {
+          goToScreen('screen-fit');
+        })
+        .getStoredModelInfo();
+    }
+
+    // --- API Key ---
+    function saveKey() {
+      var key = document.getElementById('apiKeyInput').value.trim();
+      if (!key) {
+        showAlert('apikey-error', 'Please enter an API key.');
+        return;
+      }
+      clearAlerts();
+      showSpinner('apikey-spinner');
+      google.script.run
+        .withSuccessHandler(function() {
+          hideSpinner('apikey-spinner');
+          goToScreen('screen-fit');
+        })
+        .withFailureHandler(function(err) {
+          hideSpinner('apikey-spinner');
+          showAlert('apikey-error', err.message);
+        })
+        .saveApiKey(key);
+    }
+
+    function changeApiKey() {
+      goToScreen('screen-apikey');
+      google.script.run
+        .withSuccessHandler(function(key) {
+          if (key) document.getElementById('apiKeyInput').value = key;
+        })
+        .getApiKey();
+    }
+
+    function toggleKeyVisibility() {
+      var input = document.getElementById('apiKeyInput');
+      var btn = document.getElementById('toggleKeyBtn');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'Hide';
+      } else {
+        input.type = 'password';
+        btn.textContent = 'Show';
+      }
+    }
+
+    // --- Range Selection ---
+    function useSelectionFor(inputId) {
+      google.script.run
+        .withSuccessHandler(function(a1) {
+          document.getElementById(inputId).value = a1;
+          if (inputId === 'trainRange') {
+            loadHeaders(a1);
+          }
+        })
+        .withFailureHandler(function(err) {
+          alert('Could not get selection: ' + err.message);
+        })
+        .getActiveRangeA1();
+    }
+
+    function loadHeaders(rangeA1) {
+      google.script.run
+        .withSuccessHandler(function(headers) {
+          var select = document.getElementById('targetColumn');
+          select.innerHTML = '';
+          headers.forEach(function(h) {
+            var opt = document.createElement('option');
+            opt.value = h;
+            opt.textContent = h;
+            select.appendChild(opt);
+          });
+          select.disabled = false;
+        })
+        .withFailureHandler(function(err) {
+          alert('Could not load headers: ' + err.message);
+        })
+        .getColumnHeaders(rangeA1);
+    }
+
+    // Also load headers when the user manually edits the range
+    document.getElementById('trainRange').addEventListener('change', function() {
+      var val = this.value.trim();
+      if (val) loadHeaders(val);
+    });
+
+    // --- Fit ---
+    function fitModel() {
+      var range = document.getElementById('trainRange').value.trim();
+      var target = document.getElementById('targetColumn').value;
+      var task = document.querySelector('input[name="taskType"]:checked').value;
+
+      if (!range) { showAlert('fit-error', 'Please select a training data range.'); return; }
+      if (!target) { showAlert('fit-error', 'Please select a target column.'); return; }
+
+      clearAlerts();
+      showSpinner('fit-spinner');
+      document.getElementById('fitBtn').disabled = true;
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideSpinner('fit-spinner');
+          document.getElementById('fitBtn').disabled = false;
+          showAlert('fit-success',
+            'Model fitted successfully! (ID: ' + result.model_id.substring(0, 8) + '...)');
+          populateOutputType(result.task);
+          showModelInfo({ model_id: result.model_id, task: result.task, targetColumn: target });
+          // Auto-advance to predict screen after a short delay
+          setTimeout(function() { goToScreen('screen-predict'); }, 1500);
+        })
+        .withFailureHandler(function(err) {
+          hideSpinner('fit-spinner');
+          document.getElementById('fitBtn').disabled = false;
+          showAlert('fit-error', err.message);
+        })
+        .fitModel(range, target, task);
+    }
+
+    // --- Predict ---
+    function populateOutputType(task) {
+      var select = document.getElementById('outputType');
+      select.innerHTML = '';
+      if (task === 'classification') {
+        addOption(select, 'preds', 'Predicted Classes');
+        addOption(select, 'probas', 'Class Probabilities');
+      } else {
+        addOption(select, 'mean', 'Mean Prediction');
+        addOption(select, 'full', 'Full Distribution');
+      }
+    }
+
+    function addOption(select, value, text) {
+      var opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = text;
+      select.appendChild(opt);
+    }
+
+    function showModelInfo(info) {
+      var html = '<span class="model-badge">' + info.task +
+        ' &middot; Model: ' + info.model_id.substring(0, 8) + '...</span>';
+      if (info.targetColumn) {
+        html += ' <span style="font-size:11px;color:#5f6368;">Target: ' + info.targetColumn + '</span>';
+      }
+      document.getElementById('model-info').innerHTML = html;
+    }
+
+    function predict() {
+      var range = document.getElementById('testRange').value.trim();
+      var outputType = document.getElementById('outputType').value;
+      var outputCell = document.getElementById('outputCell').value.trim();
+
+      if (!range) { showAlert('predict-error', 'Please select a test data range.'); return; }
+      if (!outputCell) { showAlert('predict-error', 'Please specify where to write results.'); return; }
+
+      clearAlerts();
+      showSpinner('predict-spinner');
+      document.getElementById('predictBtn').disabled = true;
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideSpinner('predict-spinner');
+          document.getElementById('predictBtn').disabled = false;
+          var msg = result.rowCount + ' predictions written.';
+          if (result.remainingQuota) {
+            msg += ' (Quota remaining: ' + result.remainingQuota.toLocaleString() + ' credits)';
+          }
+          showAlert('predict-success', msg);
+        })
+        .withFailureHandler(function(err) {
+          hideSpinner('predict-spinner');
+          document.getElementById('predictBtn').disabled = false;
+          showAlert('predict-error', err.message);
+        })
+        .predictModel(range, outputCell, outputType);
+    }
+
+    // --- Start ---
+    init();
+  </script>
+</body>
+</html>
