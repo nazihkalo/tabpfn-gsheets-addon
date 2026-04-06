@@ -14,6 +14,10 @@ The add-on provides a sidebar UI with a simple 3-step workflow:
 
 Under the hood, the add-on converts your selected ranges to CSV, sends them to the [TabPFN API](https://docs.priorlabs.ai) (`/v1/fit` and `/v1/predict`), and writes the results back into your spreadsheet.
 
+## Video Walkthrough 
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/cFP1T_3isxo/0.jpg)](https://www.youtube.com/watch?v=cFP1T_3isxo)
+
 ## Setup
 
 ### 1. Get a PriorLabs API Key (free)
