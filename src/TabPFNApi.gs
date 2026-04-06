@@ -65,7 +65,16 @@ function predictModel(testRangeA1, outputCell, outputType) {
   }
 
   var task = props.getProperty('TABPFN_TASK') || 'classification';
-  var csvString = rangeToCsv(testRangeA1);
+  var targetColumn = props.getProperty('TABPFN_TARGET_COLUMN');
+
+  // Automatically exclude the target column from test data if present
+  var testHeaders = getColumnHeaders(testRangeA1);
+  var csvString;
+  if (targetColumn && testHeaders.indexOf(targetColumn) !== -1) {
+    csvString = rangeToCsvExcluding(testRangeA1, targetColumn);
+  } else {
+    csvString = rangeToCsv(testRangeA1);
+  }
 
   var jsonData = {
     model_id: modelId,

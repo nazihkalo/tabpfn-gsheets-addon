@@ -1,4 +1,4 @@
-const TABPFN_CONFIG = {
+var TABPFN_CONFIG = {
   API_BASE_URL: 'https://api.priorlabs.ai',
   FIT_ENDPOINT: '/v1/fit',
   PREDICT_ENDPOINT: '/v1/predict',
